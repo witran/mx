@@ -6,7 +6,9 @@ import time
 import numpy as np
 import cv2
 import pytesseract
-from bs4 import BeautifulSoup
+import math
+import time
+from lib import parse_query, parse_text, search
 
 FILE_NAME = '.tmp/1911.02782.pdf.tei.xml'
 OUTPUT_FILE = 'imgs/shot.png'
@@ -27,14 +29,14 @@ def tess(img):
         cv2.rectangle(img, (x, y), (x + w, y + h),
                       color=(255, 0, 0), thickness=1)
 
-    print(''.join([prop.ljust(12) for prop in d]))
+    # print(''.join([prop.ljust(12) for prop in d]))
 
     for i in range(n_boxes):
         props = []
         for prop in d:
             props.append(str(d[prop][i]).ljust(12))
 
-        print(''.join(props))
+        # print(''.join(props))
 
     return img, d
 
@@ -126,7 +128,30 @@ def to_bgr(mss_img):
     return img[:, :, :3]
 
 
-def extract_line(text_data):
+def global_alignment_score(s1, s2):
+    n1 = len(s1) + 1
+    n2 = len(s2) + 1
+    f = [[0 for _ in range(n2)] for _ in range(n1)]
+    for i in range(n1):
+        f[i][0] = -i
+
+    for i in range(n2):
+        f[0][i] = -i
+
+    for i in range(1, n1):
+        for j in range(1, n2):
+            f[i][j] = max(
+                f[i][j - 1] - 1,
+                f[i - 1][j] - 1,
+                f[i - 1][j - 1] + (1 if s1[i - 1] == s2[j - 1] else -2))
+
+    # [print(''.join(map(lambda v: str(v).ljust(4), f[i]))) for i in range(n1)]
+
+    return f[n1 - 1][n2 - 1]
+
+
+def min_edit_alignment(pattern, text):
+    # find a substring in text that has minimum edit distance to pattern
     pass
 
 
@@ -145,47 +170,20 @@ def handle_capture():
         rect, mx, my = crop(img)
         cv2.imwrite('.tmp/crop.png', rect)
         print(mx, my)
-        print("{:.2f}s".format(time.time() - start))
-        tessed, text_data = tess(rect)
+        print("crop time: {:.4f}s".format(time.time() - start))
+        # tessed, text_data = tess(rect)
 
-        extract_line(text_data)
+        # extract_line(text_data)
 
-        cv2.line(tessed, (mx - 25, my), (mx + 25, my),
-                 (0, 0, 255), thickness=4)
-        cv2.line(tessed, (mx, my - 25), (mx, my + 25),
-                 (0, 0, 255), thickness=4)
-        cv2.imwrite('imgs/tess.png', tessed)
+        # try:
+        search.search(rect, mx, my, FILE_NAME)
+        # except:
+        # print('error')
 
-        print("{:.2f}s".format(time.time() - start))
+        print("total handler time: {:.4f}s".format(time.time() - start))
 
-
-text = ''
 
 # initialize tab session by querying grobid then pull data from query queue
 
-
-def process_file():
-    global text
-    start = time.time()
-    stack = []
-
-    def visit(node):
-        for child_node in node.children:
-            pass
-
-    with open(FILE_NAME, 'r') as f:
-        soup = BeautifulSoup(f, 'lxml')
-        for node in soup.descendants:
-            if (not node.name and node.parent and node.parent.name != 'ref') or node.name == 'ref':
-                content = str(node).strip()
-                if content:
-                    stack.append(content)
-
-        text = ' '.join(stack)
-        print(len(text))
-        print('finished parsing tei in {:.4f}s'.format(time.time() - start))
-
-
-process_file()
 keyboard.add_hotkey('command+e', handle_capture)
 keyboard.wait()
