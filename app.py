@@ -12,7 +12,7 @@ FILE_NAME = '.tmp/1911.02782.pdf.tei.xml'
 OUTPUT_FILE = 'imgs/shot.png'
 # heuristic values to be improved based on screen resolution
 WIDTH = 5120
-HEIGHT = 110
+HEIGHT = 120
 CORNER_PADDING = 40
 
 
