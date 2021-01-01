@@ -10,7 +10,9 @@ import math
 import time
 from lib import parse_query, parse_text, search
 
-FILE_NAME = '.tmp/1911.02782.pdf.tei.xml'
+# FILE_NAME = '.tmp/1911.02782.pdf.tei.xml'
+FILE_NAME = '.tmp/1-fuzzy.xml'
+# FILE_NAME = '.tmp/2-recsys.xml'
 OUTPUT_FILE = 'imgs/shot.png'
 # heuristic values to be improved based on screen resolution
 WIDTH = 5120
@@ -175,12 +177,12 @@ def handle_capture():
 
         # extract_line(text_data)
 
-        # try:
-        search.search(rect, mx, my, FILE_NAME)
-        # except:
-        # print('error')
+        best_raw_ref = search.search(rect, mx, my, FILE_NAME)
 
         print("total handler time: {:.4f}s".format(time.time() - start))
+        print("------")
+        print("best match:", best_raw_ref)
+        print("------")
 
 
 # initialize tab session by querying grobid then pull data from query queue

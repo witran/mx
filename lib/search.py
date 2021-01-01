@@ -70,12 +70,13 @@ def search(img, mx, my, file_name):
     print('best score:', best_score)
     print('best pair:', best_pair)
     best_key = best_pair[1][1].replace('#', '')
-    print('-----------')
-    print('raw ref:', bibs[best_key])
-    print('-----------')
+    # print('-----------')
+    # print('raw ref:', bibs[best_key])
+    # print('-----------')
     print('alignment score computation time: {:.4f}s'.format(
         time.time() - start))
     print('total search time: {:.4f}s'.format(time.time() - start0))
+    return bibs[best_key]
 
 
 # search(cv2.imread(FILE_PATTERN), MX, MY, FILE_TEXT)
