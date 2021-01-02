@@ -6,12 +6,11 @@ import time
 import numpy as np
 import cv2
 import pytesseract
-import math
 import time
-from lib import parse_query, parse_text, search
+from lib import search
 
-# FILE_NAME = '.tmp/1911.02782.pdf.tei.xml'
-FILE_NAME = '.tmp/1-fuzzy.xml'
+FILE_NAME = '.tmp/1911.02782.pdf.tei.xml'
+# FILE_NAME = '.tmp/1-fuzzy.xml'
 # FILE_NAME = '.tmp/2-recsys.xml'
 OUTPUT_FILE = 'imgs/shot.png'
 # heuristic values to be improved based on screen resolution
@@ -174,7 +173,6 @@ def handle_capture():
         print(mx, my)
         print("crop time: {:.4f}s".format(time.time() - start))
         # tessed, text_data = tess(rect)
-
         # extract_line(text_data)
 
         best_raw_ref = search.search(rect, mx, my, FILE_NAME)
@@ -186,6 +184,5 @@ def handle_capture():
 
 
 # initialize tab session by querying grobid then pull data from query queue
-
 keyboard.add_hotkey('command+e', handle_capture)
 keyboard.wait()

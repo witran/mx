@@ -3,27 +3,24 @@ import time
 from lxml import etree
 
 TEXT_FILE = '.tmp/1911.02782.pdf.tei.xml'
-# TEXT_FILE = '.tmp/test.html'
+TAG_NS = '{http://www.tei-c.org/ns/1.0}'
+ATTR_NS = '{http://www.w3.org/XML/1998/namespace}'
+REF_TAG_NAME = TAG_NS + 'ref'
+BIB_TAG_NAME = TAG_NS + 'biblStruct'
 
 
 def is_ref(node):
-    tag = node.tag.replace(tag_ns, '')
     # print(tag, node.attrib['type'] if 'type' in node.attrib else None)
-    return tag == 'ref' and 'type' in node.attrib and node.attrib['type'] == 'bibr' and 'target' in node.attrib
+    return node.tag == REF_TAG_NAME and 'type' in node.attrib and node.attrib['type'] == 'bibr' and 'target' in node.attrib
 
 
 def is_text(node):
-    tag = node.tag.replace(tag_ns, '')
+    tag = node.tag.replace(TAG_NS, '')
     return tag
 
 
 def is_bib(node):
-    tag = node.tag.replace(tag_ns, '')
-    return tag == 'biblStruct'
-
-
-tag_ns = '{http://www.tei-c.org/ns/1.0}'
-attr_ns = '{http://www.w3.org/XML/1998/namespace}'
+    return node.tag == BIB_TAG_NAME
 
 
 def process_file(file_name):
@@ -50,9 +47,9 @@ def process_file(file_name):
                 stack.append(text)
 
     bibs = {}
-    listTagName = tag_ns + 'listBibl'
-    rawRefTagName = tag_ns + 'note'
-    idAttrName = attr_ns + 'id'
+    listTagName = TAG_NS + 'listBibl'
+    rawRefTagName = TAG_NS + 'note'
+    idAttrName = ATTR_NS + 'id'
 
     for node in root.iter():
         if node.tag == listTagName:
